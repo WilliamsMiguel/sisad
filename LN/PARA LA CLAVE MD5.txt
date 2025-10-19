@@ -1,0 +1,1 @@
+UPDATE usuario SET clave_u = MD5('123456') WHERE id_u = 1;

@@ -1,0 +1,42 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    margin: 0; /* Elimina el margen predeterminado del body */
+    font-family: Arial, sans-serif; /* Establece una fuente legible */
+    background-image: url('../P/img/pj.png'); /* Ruta a tu imagen de fondo */
+    background-size: 35% 60%; /* Ajusta la imagen para cubrir toda la ventana */
+    background-position: center; /* Centra la imagen en la ventana */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+.container {
+    text-align: center; /* Centra el texto dentro del contenedor */
+    background-color: rgba(255, 255, 255, 0.795); /* Fondo blanco semitransparente para el formulario */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    border: 10px solid #696972;
+}
+label {
+    display: block;
+    margin-bottom: 8px; /* Espacio debajo de las etiquetas */
+}
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px; /* Espacio debajo de los campos de entrada */
+    border: 1px solid #ccc; /* Borde gris claro */
+    border-radius: 4px; /* Bordes redondeados */
+}
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff; /* Color de fondo azul */
+    color: #fff; /* Color del texto blanco */
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3; /* Color de fondo azul oscuro al pasar el ratón */
+}
