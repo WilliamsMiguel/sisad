@@ -3,7 +3,7 @@
 
 $servidor = "localhost";
 $usuario = "root";  // Cambia según sea necesario
-$clave = "784512**";  // Cambia según sea necesario
+$clave = "";  // Cambia según sea necesario
 $baseDeDatos = "sisadbd";
 
 $conexion = new mysqli($servidor, $usuario, $clave, $baseDeDatos);

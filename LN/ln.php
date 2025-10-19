@@ -14,12 +14,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if ($usuario)
     {
         $_SESSION['usuario'] = $usuario['nombre_usuario'];
-        $_SESSION['id_persona_usuario'] = $usuario['id_persona_usuario'];  // Almacena id_id_p_u en la sesión
+        $_SESSION['id_persona_usuario'] = $usuario['id_persona_usuario'];
+        $_SESSION['rol_usuario'] = $usuario['estado_usuario']; // <- Agregado
+        $_SESSION['estado_usuario'] = $usuario['estado_usuario']; // <- Agregado
+        $_SESSION['id_usuario'] = $usuario['id_usuario']; // <- Agregado
 
         header('Location: ../P/principal.php');
-
-
-    } else {
+    }
+    else {
         // Redirigir a login con mensaje de error
         header('Location: ../index.php?error=1');
     }
@@ -35,6 +37,11 @@ function listar_menus_activos()
 {
     return obtener_menus();
 }
+
+function listar_menus_por_usuarioLN($id_usuario) {
+    return obtener_menus_por_usuario($id_usuario);
+}
+
 
 
 ?>

@@ -1,0 +1,622 @@
+<?php
+// P/principal.php
+
+include '../LN/ln.php';
+if (!isset($_SESSION['usuario'])) {
+    header('Location: ../index.php');
+    exit();
+}
+
+// Obtener datos del usuario
+$persona = obtener_datos_personaLN($_SESSION['id_persona_usuario']);
+$estado_usuario = $_SESSION['estado_usuario']; // Necesitamos agregar esto desde ln.php
+$id_usuario = $_SESSION['id_usuario'];         // Necesitamos agregar esto también
+
+// Obtener menús según el tipo de usuario
+// Obtener menús según el tipo de usuario
+if ($estado_usuario == 1) {
+    $menus = listar_menus_activos(); // Superusuario: todos los menús
+} else {
+    $menus = listar_menus_por_usuarioLN($id_usuario); // Editor: solo menús asignados
+}
+
+// Recuperar los datos de la persona
+$persona = obtener_datos_personaLN($_SESSION['id_persona_usuario']);
+
+if ($persona) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>SISAD - Sistema de Asignación y Desplazamiento - NCPPP</title>
+        <link href="../libreria/bootstrap.min.css" rel="stylesheet">
+        <script src="../libreria/jquery-3.6.0.min.js"></script>
+        <link rel="icon" href="img/pj.png" type="image/x-icon">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --primary-dark: #1a1a1a;
+                --secondary-dark: #2d2d2d;
+                --accent-red: #dc2626;
+                --accent-red-hover: #b91c1c;
+                --text-primary: #ffffff;
+                --text-secondary: #b0b0b0;
+                --text-muted: #6b7280;
+                --border-color: #374151;
+                --glass-bg: rgba(255, 255, 255, 0.05);
+                --glass-border: rgba(255, 255, 255, 0.1);
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #2d1b1b 100%);
+                color: var(--text-primary);
+                height: 100vh;
+                overflow: hidden;
+                position: relative;
+            }
+
+            /* Animated background particles */
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            }
+
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: var(--accent-red);
+                border-radius: 50%;
+                opacity: 0.3;
+                animation: float 15s infinite ease-in-out;
+            }
+
+            .particle:nth-child(odd) {
+                background: rgba(220, 38, 38, 0.2);
+                animation-duration: 20s;
+            }
+
+            @keyframes float {
+                0%, 100% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+                10% { opacity: 0.3; }
+                90% { opacity: 0.3; }
+                50% { transform: translateY(-100px) translateX(50px) rotate(180deg); opacity: 0.6; }
+            }
+
+            .container-fluid {
+                height: 100vh;
+                position: relative;
+                z-index: 2;
+            }
+
+            /* Sidebar Styles */
+            .sidebar {
+                background: rgba(26, 26, 26, 0.95);
+                backdrop-filter: blur(20px);
+                border-right: 1px solid var(--glass-border);
+                height: 100vh;
+                padding: 0;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .sidebar::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(90deg, var(--accent-red), #ef4444, var(--accent-red));
+                animation: pulse-line 3s ease-in-out infinite;
+            }
+
+            @keyframes pulse-line {
+                0%, 100% { opacity: 0.5; }
+                50% { opacity: 1; }
+            }
+
+            .user-section {
+                padding: 2rem 1.5rem;
+                border-bottom: 1px solid var(--border-color);
+                position: relative;
+            }
+
+            .logout-btn {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                background: rgba(220, 38, 38, 0.1);
+                border: 1px solid var(--accent-red);
+                color: var(--accent-red);
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                text-decoration: none;
+                font-size: 0.875rem;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(10px);
+            }
+
+            .logout-btn:hover {
+                background: var(--accent-red);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+            }
+
+            .welcome-text {
+                font-size: 0.875rem;
+                color: var(--text-muted);
+                margin-bottom: 0.5rem;
+                font-weight: 400;
+            }
+
+            .user-name {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            }
+
+            /* Menu Styles */
+            .menu-container {
+                padding: 1.5rem 1rem;
+                height: calc(100vh - 120px);
+                overflow-y: auto;
+            }
+
+            .menu-container::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            .menu-container::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            .menu-container::-webkit-scrollbar-thumb {
+                background: var(--accent-red);
+                border-radius: 3px;
+            }
+
+            .menu-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .menu-item {
+                margin-bottom: 0.5rem;
+            }
+
+            .menu-link {
+                display: flex;
+                align-items: center;
+                padding: 1rem 1.25rem;
+                background: rgba(45, 45, 45, 0.3);
+                border: 1px solid transparent;
+                border-radius: 12px;
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.95rem;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                position: relative;
+                overflow: hidden;
+                backdrop-filter: blur(10px);
+            }
+
+            .menu-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+                transition: left 0.6s;
+            }
+
+            .menu-link:hover::before {
+                left: 100%;
+            }
+
+            .menu-link:hover {
+                background: rgba(220, 38, 38, 0.1);
+                border-color: var(--accent-red);
+                color: var(--text-primary);
+                transform: translateX(8px);
+                box-shadow: 0 8px 25px rgba(220, 38, 38, 0.15);
+            }
+
+            .menu-link i {
+                width: 20px;
+                margin-right: 12px;
+                text-align: center;
+            }
+
+            .menu-activo {
+                background: linear-gradient(135deg, var(--accent-red), #dc2626) !important;
+                border-color: var(--accent-red-hover) !important;
+                color: white !important;
+                transform: translateX(8px) !important;
+                box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4) !important;
+            }
+
+            /* Content Area */
+            .content-area {
+                background: rgba(255, 255, 255, 0.02);
+                backdrop-filter: blur(20px);
+                height: 100vh;
+                padding: 0;
+                border-left: 1px solid var(--glass-border);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .content-header {
+                background: rgba(26, 26, 26, 0.8);
+                backdrop-filter: blur(15px);
+                border-bottom: 1px solid var(--border-color);
+                padding: 1.5rem 2rem;
+                position: relative;
+            }
+
+            .content-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+            }
+
+            .content-title {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin: 0;
+            }
+
+            .content-subtitle {
+                font-size: 0.875rem;
+                color: var(--text-muted);
+                margin-top: 0.25rem;
+            }
+
+            .content-body {
+                padding: 2rem;
+                height: calc(100vh - 100px);
+                overflow-y: auto;
+                position: relative;
+            }
+
+            /* Default Content Styles */
+            .default-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+                text-align: center;
+                position: relative;
+            }
+
+            .welcome-card {
+                background: rgba(45, 45, 45, 0.4);
+                backdrop-filter: blur(20px);
+                border: 1px solid var(--glass-border);
+                border-radius: 20px;
+                padding: 3rem 2rem;
+                max-width: 500px;
+                position: relative;
+                overflow: hidden;
+                animation: fadeInUp 1s ease-out;
+            }
+
+            .welcome-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: conic-gradient(from 0deg, transparent, rgba(220, 38, 38, 0.1), transparent);
+                animation: rotate 8s linear infinite;
+            }
+
+            .welcome-card-content {
+                position: relative;
+                z-index: 1;
+            }
+
+            @keyframes rotate {
+                to { transform: rotate(360deg); }
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .welcome-icon {
+                font-size: 4rem;
+                color: var(--accent-red);
+                margin-bottom: 1.5rem;
+                text-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--text-primary);
+                margin-bottom: 1rem;
+                background: linear-gradient(135deg, #ffffff, #b0b0b0);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .welcome-description {
+                font-size: 1.1rem;
+                color: var(--text-secondary);
+                line-height: 1.6;
+                margin-bottom: 2rem;
+            }
+
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+            }
+
+            .stat-item {
+                background: rgba(220, 38, 38, 0.1);
+                border: 1px solid rgba(220, 38, 38, 0.2);
+                border-radius: 12px;
+                padding: 1rem;
+                text-align: center;
+                transition: all 0.3s ease;
+            }
+
+            .stat-item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+            }
+
+            .stat-number {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: var(--accent-red);
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+                margin-top: 0.25rem;
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    position: fixed;
+                    z-index: 1000;
+                    transition: transform 0.3s ease;
+                }
+
+                .sidebar.show {
+                    transform: translateX(0);
+                }
+
+                .content-area {
+                    margin-left: 0;
+                }
+            }
+
+            /* Loading Animation */
+            .loading-spinner {
+                width: 40px;
+                height: 40px;
+                border: 3px solid rgba(220, 38, 38, 0.3);
+                border-top: 3px solid var(--accent-red);
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+
+        <script>
+            // Función para cargar contenido via AJAX con jQuery
+            function cargarContenido(menu_id) {
+                // Mostrar indicador de carga
+                $('#contenido_dinamico').html(`
+            <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                <div class="loading-spinner"></div>
+            </div>
+        `);
+
+                $.ajax({
+                    url: 'contenido_menu.php',
+                    type: 'POST',
+                    data: { id_menu: menu_id },
+                    success: function(response) {
+                        setTimeout(() => {
+                            $('#contenido_dinamico').html(response);
+                        }, 500);
+                    },
+                    error: function() {
+                        $('#contenido_dinamico').html(`
+                    <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error al cargar el contenido
+                        </div>
+                    </div>
+                `);
+                    }
+                });
+            }
+
+            // Espera que el DOM y jQuery estén listos
+            $(document).ready(function() {
+                // Crear partículas animadas
+                createParticles();
+
+                // Carga contenido por defecto
+                $('#contenido_dinamico').load('contenido_default.php');
+
+                // Maneja el clic en los enlaces del menú
+                $('.menu-link').on('click', function() {
+                    $('.menu-link').removeClass('menu-activo');
+                    $(this).addClass('menu-activo');
+                });
+
+                // Efectos de hover mejorados
+                $('.menu-link').hover(
+                    function() {
+                        $(this).find('i').addClass('fa-bounce');
+                    },
+                    function() {
+                        $(this).find('i').removeClass('fa-bounce');
+                    }
+                );
+            });
+
+            // Función para crear partículas animadas
+            function createParticles() {
+                const particlesContainer = $('<div class="particles"></div>');
+                $('body').append(particlesContainer);
+
+                for (let i = 0; i < 50; i++) {
+                    const particle = $('<div class="particle"></div>');
+                    particle.css({
+                        left: Math.random() * 100 + '%',
+                        animationDelay: Math.random() * 15 + 's',
+                        animationDuration: (Math.random() * 10 + 10) + 's'
+                    });
+                    particlesContainer.append(particle);
+                }
+            }
+        </script>
+    </head>
+    <body>
+    <div class="container-fluid p-0">
+        <div class="row g-0 h-100">
+            <!-- Sidebar del Menú -->
+            <nav class="col-md-3 col-lg-2 sidebar">
+                <!-- Sección de Usuario -->
+                <div class="user-section">
+                    <a href="logout.php" class="logout-btn">
+                        <i class="fas fa-sign-out-alt me-1"></i> Salir
+                    </a>
+                    <div class="welcome-text">Bienvenido</div>
+                    <div class="user-name"><?php echo htmlspecialchars($persona["nomyap_persona"]); ?></div>
+                </div>
+
+                <!-- Menú -->
+                <div class="menu-container">
+                    <ul class="menu-list">
+                        <?php
+                        $menu_icons = [
+                            'fas fa-tachometer-alt', 'fas fa-users', 'fas fa-file-alt',
+                            'fas fa-cogs', 'fas fa-chart-bar', 'fas fa-database',
+                            'fas fa-tasks', 'fas fa-user-shield', 'fas fa-bell'
+                        ];
+                        $icon_index = 0;
+                        foreach ($menus as $menu):
+                            ?>
+                            <li class="menu-item">
+                                <a href="javascript:void(0);" class="menu-link" onclick="cargarContenido(<?php echo $menu['id_menu']; ?>)">
+                                    <i class="<?php echo $menu_icons[$icon_index % count($menu_icons)]; ?>"></i>
+                                    <?php echo htmlspecialchars($menu['descripcion_menu']); ?>
+                                </a>
+                            </li>
+                            <?php
+                            $icon_index++;
+                        endforeach;
+                        ?>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Zona de Contenido -->
+            <main class="col-md-9 col-lg-10 content-area">
+                <div class="content-header">
+                    <h1 class="content-title">SISAD</h1>
+                    <p class="content-subtitle">Sistema de Asignación y Desplazamiento - NCPPP</p>
+                </div>
+
+                <div class="content-body">
+                    <div id="contenido_dinamico">
+                        <!-- Contenido por defecto mientras no se selecciona un módulo -->
+                        <div class="default-content">
+                            <div class="welcome-card">
+                                <div class="welcome-card-content">
+                                    <div class="welcome-icon">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                    <h2 class="welcome-title">Panel de Control</h2>
+                                    <p class="welcome-description">
+                                        Bienvenido al sistema SISAD. Selecciona un módulo del menú lateral para comenzar a trabajar.
+                                    </p>
+
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <div class="stat-number"><?php echo count($menus); ?></div>
+                                            <div class="stat-label">Módulos</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">24/7</div>
+                                            <div class="stat-label">Disponible</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-number">100%</div>
+                                            <div class="stat-label">Seguro</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../libreria/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+
+    <?php
+} else {
+    echo "<p>No se encontraron datos para la persona asociada.</p>";
+}
+?>

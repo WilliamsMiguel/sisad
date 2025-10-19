@@ -1,7 +1,7 @@
 <?php
-// LN/ln_list.php
-session_start();
-include '../AD/ad.php'; // Incluye las funciones de acceso a datos
+// LN/ln_listaR.php
+
+require_once '../AD/ad.php'; // Incluye las funciones de acceso a datos
 
 // Función para listar áreas
 function obtener_areas() 
@@ -32,5 +32,10 @@ function obtener_menuss()
 {
     return listar_menuss();
 }
+
+function obtener_nombre_bien() {
+    return listar_nombre_bien();
+}
+
 
 ?>

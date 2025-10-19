@@ -1,0 +1,107 @@
+.hidden {
+    display: none;
+}
+.container {
+    text-align: center;
+    margin: 20px auto;
+    width: 30%;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+button, .link-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #464242;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    
+}
+button:hover, .link-button:hover {
+    background-color: #0056b3;
+}
+button:focus, .link-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.7);
+}
+button, .link-buttonMIO {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #999595;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.3s ease;
+    
+}
+button:hover, .link-buttonMIO:hover {
+    background-color: #464242;
+}
+button:focus, .link-buttonMIO:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.7);
+}
+
+
+/* Consolidación de estilos del modal */
+/* Estilo del modal */
+#result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo oscuro transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#result-modal.hidden {
+    display: none;
+}
+
+#modal-content {
+    background: white; /* Fondo blanco */
+    width: 90%; /* Ocupa el 90% del ancho de la pantalla */
+    max-width: 1000px; /* Limita el tamaño máximo a 1000px */
+    height: 500px; /* Altura fija */
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    overflow-y: auto; /* Scroll interno si excede 500px */
+    padding: 20px;
+    box-sizing: border-box; /* Asegura que padding no aumente el tamaño total */
+}
+
+#modal-data {
+    text-align: left; /* Alineación del contenido a la izquierda */
+    overflow-y: auto; /* Scroll en el área de datos */
+}
+
+#modal-data table {
+    width: 100%; /* Tabla ocupa todo el ancho */
+    border-collapse: collapse; /* Unifica bordes */
+    margin-bottom: 20px;
+}
+
+#modal-data table th, 
+#modal-data table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#modal-data table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}

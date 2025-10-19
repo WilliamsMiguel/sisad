@@ -1,0 +1,36 @@
+<tbody>
+    <?php if (!empty($usuarios)): ?>
+        <?php foreach ($usuarios as $row): ?>
+            <tr>
+                <td><?= htmlspecialchars($row['id_usuario']) ?></td>
+                <td><?= htmlspecialchars($row['nombre_usuario']) ?></td>
+                <td><?= htmlspecialchars($row['id_persona_usuario']) ?></td>
+                <td>
+                    <?php if ($row['id_usuario'] != $id_usuario_actual): ?>
+                        <form class="estado-form" data-id="<?= $row['id_usuario'] ?>">
+                            <select name="estado_usuario" class="form-select estado-select">
+                                <option value="1" <?= $row['estado_usuario'] == 1 ? 'selected' : '' ?>>Superusuario</option>
+                                <option value="2" <?= $row['estado_usuario'] == 2 ? 'selected' : '' ?>>Editor</option>
+                                <option value="3" <?= $row['estado_usuario'] == 3 ? 'selected' : '' ?>>Deshabilitado</option>
+                            </select>
+                        </form>
+                    <?php else: ?>
+                        <span><?= $row['estado_usuario'] == 1 ? 'Superusuario' : ($row['estado_usuario'] == 2 ? 'Editor' : 'Deshabilitado') ?></span>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if ($row['estado_usuario'] == 2 && $row['id_usuario'] != $id_usuario_actual): ?>
+                        <button class="btn btn-sm btn-secondary" onclick="abrirModalModulos(<?= $row['id_usuario'] ?>)">
+                            Asignar/Quitar módulos
+                        </button>
+                    <?php endif; ?>
+                </td>
+
+
+
+            </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr><td colspan="4">No se encontraron usuarios.</td></tr>
+    <?php endif; ?>
+    </tbody>

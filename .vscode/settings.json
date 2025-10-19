@@ -1,3 +1,5 @@
 {
-    "window.autoDetectColorScheme": true
+    "window.autoDetectColorScheme": true,
+    "window.density.editorTabHeight": "compact",
+    "workbench.editor.defaultBinaryEditor": "default"
 }
